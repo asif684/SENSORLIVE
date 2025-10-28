@@ -99,63 +99,6 @@ sensor_project/
 ```
 
 ---
-## ⚡ FastAPI Integration – Real-Time Inference API
-
-To serve predictions via REST, this project integrates **FastAPI** for scalable, low-latency inference.
-
-
----
-## 🔄 CI/CD Pipeline (GitHub Actions + AWS)
-
-**Workflow:** `.github/workflows/main.yaml`
-
-**Pipeline stages:**
-1. **Build & Lint**
-   - Install dependencies from `requirements.txt`
-   - Run linters and static checks (flake8/black)
-2. **Test**
-   - Run unit tests and integration tests
-3. **Train** (optional / conditional)
-   - Execute training pipeline (if data or code changes warrant retraining)
-   - Generate artifacts under `artifact/`
-4. **Evaluation & Validation**
-   - Run evaluation scripts to compute metrics and custom cost
-   - Validate model meets thresholds (e.g., total cost < threshold OR FN rate <= limit)
-5. **Sync & Deploy**
-   - Upload model, transformer, and artifacts to **AWS S3**
-   - (Optional) Trigger deployment to EC2 / Lambda / SageMaker
-
-
-**Note:** Secure secrets using GitHub Secrets (e.g., `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `MONGO_DB_URL`).
-
----
-
-## ☁️ AWS Integration
-
-- **S3** — primary artifact/model storage (trained models, transformers, metrics, logs)  
-- **IAM** — least-privilege roles for CI/CD and runtime access  
-- **EC2** — optional model serving options (batch/real-time)  
-- **CloudWatch / S3 Events** — optional monitoring + retrain triggers
-
-Common pattern:
-- CI pipeline builds and tests → artifacts saved to `artifact/` → `s3_syncer.py` uploads artifacts to `s3://<bucket>/models/<run-id>/`
-
----
-
-## 🧮 Schema Configuration
-
-**File:** `config/schema.yaml` — controls ingestion + validation
-
-Contents include:
-- `columns` — list of all columns with types
-- `numerical_columns` — features used for transformation/scaling
-- `drop_columns` — columns to remove before training
-- (Optional) `target_column` — explicit target column (e.g., `class`)
-
-**Usage:**
-- `Data Ingestion` reads schema and validates incoming data shape & dtypes.
-- `Data Validation` will fail the pipeline if required columns missing or unexpected types present.
-
 ---
 
 ## 🧠 Machine Learning Pipeline (Detailed Steps)
@@ -202,4 +145,66 @@ Contents include:
   - Build and push the Docker image to **AWS ECR (Elastic Container Registry)**
   - Deploy the containerized model to **AWS EC2** or other compute service for real-time inference
 - The model version and metadata are tracked for reproducibility and rollback
+
+---
+
+
+## ⚡ FastAPI Integration – Real-Time Inference API
+
+To serve predictions via REST, this project integrates **FastAPI** for scalable, low-latency inference.
+
+
+---
+
+---
+
+## 🧮 Schema Configuration
+
+**File:** `config/schema.yaml` — controls ingestion + validation
+
+Contents include:
+- `columns` — list of all columns with types
+- `numerical_columns` — features used for transformation/scaling
+- `drop_columns` — columns to remove before training
+- (Optional) `target_column` — explicit target column (e.g., `class`)
+
+**Usage:**
+- `Data Ingestion` reads schema and validates incoming data shape & dtypes.
+- `Data Validation` will fail the pipeline if required columns missing or unexpected types present.
+
+---
+## 🔄 CI/CD Pipeline (GitHub Actions + AWS)
+
+**Workflow:** `.github/workflows/main.yaml`
+
+**Pipeline stages:**
+1. **Build & Lint**
+   - Install dependencies from `requirements.txt`
+   - Run linters and static checks (flake8/black)
+2. **Test**
+   - Run unit tests and integration tests
+3. **Train** (optional / conditional)
+   - Execute training pipeline (if data or code changes warrant retraining)
+   - Generate artifacts under `artifact/`
+4. **Evaluation & Validation**
+   - Run evaluation scripts to compute metrics and custom cost
+   - Validate model meets thresholds (e.g., total cost < threshold OR FN rate <= limit)
+5. **Sync & Deploy**
+   - Upload model, transformer, and artifacts to **AWS S3**
+   - (Optional) Trigger deployment to EC2 / Lambda / SageMaker
+
+
+**Note:** Secure secrets using GitHub Secrets (e.g., `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `MONGO_DB_URL`).
+
+---
+
+## ☁️ AWS Integration
+
+- **S3** — primary artifact/model storage (trained models, transformers, metrics, logs)  
+- **IAM** — least-privilege roles for CI/CD and runtime access  
+- **EC2** — optional model serving options (batch/real-time)  
+- **CloudWatch / S3 Events** — optional monitoring + retrain triggers
+
+Common pattern:
+- CI pipeline builds and tests → artifacts saved to `artifact/` → `s3_syncer.py` uploads artifacts to `s3://<bucket>/models/<run-id>/`
 

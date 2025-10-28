@@ -163,21 +163,43 @@ Contents include:
 ### 1️⃣ Data Ingestion
 - Read raw sensor data from **MongoDB** (via `mongo_db_connection.py`)
 - Export collection to CSV / DataFrame
-- Save raw artifact to `artifact/raw/` and optionally to **S3**
-- Split into train/test according to `config` (e.g., 80/20)
+- Save raw artifact to `artifact/raw/` and optionally to **AWS S3**
+- Split into train/test according to configuration (e.g., 80/20)
+
+---
 
 ### 2️⃣ Data Transformation
 - Handle missing values (impute or fill)
-- Scale numeric features (RobustScaler / StandardScaler)
+- Scale numeric features using **RobustScaler / StandardScaler**
 - Encode categorical variables if present
-- Save transformer object (`transformer.pkl`) to `artifact/` and S3
+- Save transformer object (`transformer.pkl`) to `artifact/` and **S3**
+
+---
 
 ### 3️⃣ Model Training
-- Train candidate models (e.g., LogisticRegression, RandomForest, XGBoost)
-- Train on transformed train set
-- Store trained model object (wrapped in `SensorModel` to include preprocessors)
+- Train multiple candidate models (e.g., **LogisticRegression**, **RandomForest**, **XGBoost**)
+- Train models on transformed training data
+- Save the best-performing model wrapped in a **SensorModel** class (includes both model and preprocessor)
+- Generate `model.pkl` under `artifact/model/` and optionally sync to **S3**
+
+---
 
 ### 4️⃣ Evaluation
-- Combine train & test or evaluate on holdout test set
-- Compute predictions and classic metrics (precision, recall, f1)
-- **Compute custom cost**:
+- Combine train & test data or evaluate on a dedicated holdout test set
+- Compute model predictions and classic metrics: **Precision**, **Recall**, **F1-Score**
+- **Compute custom cost:**
+  \[
+  \text{Total Cost} = (10 \times \text{False Positives}) + (500 \times \text{False Negatives})
+  \]
+- Select the model with **minimum total cost** and acceptable recall threshold
+
+---
+
+### 5️⃣ Model Pushing
+- Once the model passes all evaluation checks:
+  - Push the trained model (`model.pkl`), transformer (`transformer.pkl`), and metrics to **AWS S3** under a versioned directory (e.g., `s3://<bucket>/models/<timestamp>/`)
+  - Containerize the inference environment using **Docker**
+  - Build and push the Docker image to **AWS ECR (Elastic Container Registry)**
+  - Deploy the containerized model to **AWS EC2** or other compute service for real-time inference
+- The model version and metadata are tracked for reproducibility and rollback
+

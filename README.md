@@ -6,7 +6,7 @@ This project is a **production-grade MLOps pipeline** for predicting failures in
 The APS supplies pressurized air used in braking, gear shifting, and other critical functions. The objective is to minimize operational costs by **reducing false predictions** — especially **false negatives**, which represent undetected APS failures and can cause expensive breakdowns.
 
 ---
-> ⚙️ This project is built with a complete **MLOps production pipeline** using **Docker**, **AWS S3**, **AWS EC2**, **AWS ECR**, and **GitHub Actions** for automated **CI/CD deployment**.  
+⚙️ This project is built with a complete **MLOps production pipeline** using **Docker**, **AWS S3**, **AWS EC2**, **AWS ECR**, and **GitHub Actions** for automated **CI/CD deployment**.  
 It ensures continuous integration, continuous training, and continuous deployment with containerized builds and cloud-based orchestration.
 
 ---
